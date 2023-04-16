@@ -59,9 +59,9 @@ namespace sockcanpp {
         CanId(const uint32_t identifier): _identifier(identifier) {
             if (isValidIdentifier(identifier)) {
                 if (((int32_t)log2(identifier) + 1) > 11)
-                    _isStandardFrameId = true;
-                else
                     _isExtendedFrameId = true;
+                else
+                    _isStandardFrameId = true;
             } else if (isErrorFrame(identifier)) {
                 _isErrorFrame = true;
             } else if (isRemoteTransmissionRequest(identifier)) {
