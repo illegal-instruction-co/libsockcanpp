@@ -55,7 +55,7 @@ namespace sockcanpp {
             _isRemoteTransmissionRequest(orig._isRemoteTransmissionRequest), _isStandardFrameId(orig._isStandardFrameId),
             _isExtendedFrameId(orig._isExtendedFrameId) { /* copy */ }
 
-            CanId(const uint32_t identifier): _identifier(identifier) {
+            CanId(const uint16_t identifier): _identifier(identifier) {
                 if (isValidIdentifier(identifier)) {                    
                     if (((int32_t)log2(identifier) + 1) > 11)
                         _isStandardFrameId = true;
@@ -75,7 +75,7 @@ namespace sockcanpp {
         operator int16_t()  const { return isStandardFrameId() ? (int16_t)_identifier : throw system_error(error_code(0xbad1d, generic_category()), "INVALID CAST: ID is extended or invalid!"); }
         operator uint16_t() const { return isStandardFrameId() ? (uint16_t)_identifier : throw system_error(error_code(0xbad1d, generic_category()), "INVALID CAST: ID is extended or invalid!"); }
         operator int32_t()  const { return _identifier; }
-        operator uint32_t() const { return _identifier; }
+        operator uint16_t() const { return _identifier; }
 #pragma endregion
 
 #pragma region "Bitwise Operators"
@@ -84,7 +84,7 @@ namespace sockcanpp {
         CanId    operator &(const int16_t x)  const { return _identifier & x; }
         CanId    operator &(const uint16_t x) const { return _identifier & x; }
         CanId    operator &(const int32_t x)  const { return _identifier & x; }
-        CanId    operator &(const uint32_t x) const { return _identifier & x; }
+        CanId    operator &(const uint16_t x) const { return _identifier & x; }
         CanId    operator &(const int64_t x)  const { return _identifier & x; }
         CanId    operator &(const uint64_t x) const { return _identifier & x; }
 
@@ -93,7 +93,7 @@ namespace sockcanpp {
         CanId    operator |(const int16_t x)  const { return _identifier | x; }
         CanId    operator |(const uint16_t x) const { return _identifier | x; }
         CanId    operator |(const int32_t x)  const { return _identifier | x; }
-        CanId    operator |(const uint32_t x) const { return _identifier | x; }
+        CanId    operator |(const uint16_t x) const { return _identifier | x; }
         CanId    operator |(const int64_t x)  const { return _identifier | x; }
         CanId    operator |(const uint64_t x) const { return _identifier | x; }
 #pragma endregion
@@ -104,7 +104,7 @@ namespace sockcanpp {
         bool operator ==(const int16_t x)  const { return _identifier == x; }
         bool operator ==(const uint16_t x) const { return _identifier == x; }
         bool operator ==(const int32_t x)  const { return _identifier == x; }
-        bool operator ==(const uint32_t x) const { return _identifier == x; }
+        bool operator ==(const uint16_t x) const { return _identifier == x; }
         bool operator ==(const int64_t x)  const { return (x > UINT32_MAX || x < INT32_MIN) ? false : x == _identifier; }
         bool operator ==(const uint64_t x) const { return x > UINT32_MAX ? false : x == _identifier; }
         bool operator !=(CanId& x)         const { return _identifier != x._identifier; }
@@ -112,19 +112,19 @@ namespace sockcanpp {
         bool operator !=(const int16_t x)  const { return _identifier != x; }
         bool operator !=(const uint16_t x) const { return _identifier != x; }
         bool operator !=(const int32_t x)  const { return _identifier != x; }
-        bool operator !=(const uint32_t x) const { return _identifier != x; }
+        bool operator !=(const uint16_t x) const { return _identifier != x; }
         bool operator !=(const int64_t x)  const { return (x > UINT32_MAX || x < INT32_MIN) ? false : x != _identifier; }
         bool operator !=(const uint64_t x) const { return x > UINT32_MAX ? false : x != _identifier; }
 
         bool operator <(CanId& x)          const { return x._identifier < _identifier; }
         bool operator <(int32_t x)         const { return x < _identifier; }
-        bool operator <(uint32_t x)        const { return x < _identifier; }
+        bool operator <(uint16_t x)        const { return x < _identifier; }
         bool operator <(int16_t x)         const { return x < _identifier; }
         bool operator <(uint16_t x)        const { return x < _identifier; }
         bool operator <=(CanId& x)         const { return x._identifier <= _identifier; }
         bool operator >(CanId& x)          const { return x._identifier > _identifier; }
         bool operator >(int32_t x)         const { return x > _identifier; }
-        bool operator >(uint32_t x)        const { return x > _identifier; }
+        bool operator >(uint16_t x)        const { return x > _identifier; }
         bool operator >(int16_t x)         const { return x > _identifier; }
         bool operator >(uint16_t x)        const { return x > _identifier; }
         bool operator >=(CanId& x)         const { return x._identifier >= _identifier; }
@@ -136,13 +136,13 @@ namespace sockcanpp {
 
 #pragma region "Assignment Operators"
         CanId operator =(const int32_t val) {
-            uint32_t tmpVal = val;
+            uint16_t tmpVal = val;
             auto tmp = (isValidIdentifier(tmpVal) ? CanId(val) : throw system_error(error_code(0x5421, generic_category()), "INVALID CAST: ID is extended or invalid!"));
             return tmp;
         }
 
-        CanId operator =(const uint32_t val) {
-            uint32_t tmp = val;
+        CanId operator =(const uint16_t val) {
+            uint16_t tmp = val;
             return (isValidIdentifier(tmp) ? CanId(val) : throw system_error(error_code(0x5421, generic_category()), "INVALID CAST: ID is extended or invalid!"));
         }
 
@@ -155,7 +155,7 @@ namespace sockcanpp {
         CanId    operator +(const int16_t x)  const { return _identifier + x; }
         CanId    operator +(const uint16_t x) const { return _identifier + x; }
         CanId    operator +(const int32_t x)  const { return _identifier + x; }
-        CanId    operator +(const uint32_t x) const { return _identifier + x; }
+        CanId    operator +(const uint16_t x) const { return _identifier + x; }
         CanId    operator +(const int64_t x)  const { return _identifier + x; }
         CanId    operator +(const uint64_t x) const { return _identifier + x; }
 
@@ -164,7 +164,7 @@ namespace sockcanpp {
         CanId    operator -(const int16_t x)  const { return _identifier - x; }
         CanId    operator -(const uint16_t x) const { return _identifier - x; }
         CanId    operator -(const int32_t x)  const { return _identifier - x; }
-        CanId    operator -(const uint32_t x) const { return _identifier - x; }
+        CanId    operator -(const uint16_t x) const { return _identifier - x; }
         CanId    operator -(const int64_t x)  const { return _identifier - x; }
         CanId    operator -(const uint64_t x) const { return _identifier - x; }
 #pragma endregion
@@ -178,7 +178,7 @@ namespace sockcanpp {
              * @return true If value is a valid CAN identifier.
              * @return false Otherwise.
              */
-            static bool isValidIdentifier(uint32_t value) {
+            static bool isValidIdentifier(uint16_t value) {
                 int32_t tmpValue = ((int32_t)log2(value) + 2); // Get bit count
 
                 // Check for extended frame flag
@@ -198,7 +198,7 @@ namespace sockcanpp {
              * @return true If value has the error frame flag (bit) set to 1.
              * @return false Otherwise.
              */
-            static bool isErrorFrame(uint32_t value) {
+            static bool isErrorFrame(uint16_t value) {
                 try { return bitset<sizeof(int32_t)>(value).test(29); }
                 catch (...) { return false; /* Brute-force, but works. */ }
             }
@@ -211,7 +211,7 @@ namespace sockcanpp {
              * @return true If the frame is a remote transmission request.
              * @return false Otherwise.
              */
-            static bool isRemoteTransmissionRequest(uint32_t value) {
+            static bool isRemoteTransmissionRequest(uint16_t value) {
                 try { return bitset<sizeof(int32_t)>(value).test(30); }
                 catch (...) { return false; /* Brute-force, but works. */ }
             }
@@ -231,7 +231,7 @@ namespace sockcanpp {
             bool _isStandardFrameId = false;
             bool _isExtendedFrameId = false;
 
-            uint32_t _identifier = 0;
+            uint16_t _identifier = 0;
     };
 
 }
