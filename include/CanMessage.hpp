@@ -59,9 +59,7 @@ namespace sockcanpp {
             if (frameData.size() > 8) { throw system_error(error_code(0xbadd1c, generic_category()), "Payload too big!"); }
 
             struct can_frame rawFrame;
-
-            rawFrame.can_id = canId & 0x7FF;
-
+            rawFrame.can_id = canId;
             memcpy(rawFrame.data, frameData.data(), frameData.size());
             rawFrame.can_dlc = frameData.size();
 
