@@ -103,7 +103,7 @@ namespace sockcanpp {
 
         fd_set readFileDescriptors;
         timeval waitTime;
-        waitTime.tv_sec = timeout.count() / 1000;
+        waitTime.tv_sec  = timeout.count() / 1000;
         waitTime.tv_usec = timeout.count() * 1000;
 
         FD_ZERO(&readFileDescriptors);
@@ -118,9 +118,7 @@ namespace sockcanpp {
      *
      * @return CanMessage The message read from the bus.
      */
-    CanMessage CanDriver::readMessage() {
-	return readMessageLock();
-    }
+    CanMessage CanDriver::readMessage() { return readMessageLock(); }
 
     /**
      * @brief readMessage deadlock guard, attempts to read a message from the associated CAN bus.
@@ -128,20 +126,17 @@ namespace sockcanpp {
      * @return CanMessage The message read from the bus.
      */
     CanMessage CanDriver::readMessageLock(bool const lock) {
-	std::unique_ptr<std::unique_lock<std::mutex>> _lockLck{nullptr};
-	if (lock)
-	    _lockLck = std::unique_ptr<std::unique_lock<std::mutex>>{new std::unique_lock<std::mutex>{_lock}};
-        if (0 > _socketFd)
-	    throw InvalidSocketException("Invalid socket!", _socketFd);
-        int32_t readBytes{0};
+        std::unique_ptr<std::unique_lock<std::mutex>> _lockLck { nullptr };
+        if (lock) _lockLck = std::unique_ptr<std::unique_lock<std::mutex>> { new std::unique_lock<std::mutex> { _lock } };
+        if (0 > _socketFd) throw InvalidSocketException("Invalid socket!", _socketFd);
+        int32_t readBytes { 0 };
         can_frame canFrame;
         memset(&canFrame, 0, sizeof(can_frame));
         readBytes = read(_socketFd, &canFrame, sizeof(can_frame));
-        if (0 > readBytes)
-	    throw CanException(formatString("FAILED to read from CAN! Error: %d => %s", errno, strerror(errno)), _socketFd);
-        return CanMessage{canFrame};
+        if (0 > readBytes) throw CanException(formatString("FAILED to read from CAN! Error: %d => %s", errno, strerror(errno)), _socketFd);
+        return CanMessage { canFrame };
     }
-    
+
     /**
      * @brief Attempts to send a CAN message on the associated bus.
      *
@@ -163,7 +158,7 @@ namespace sockcanpp {
 
         auto canFrame = message.getRawFrame();
 
-        if (forceExtended || (message.getCanId() > CAN_SFF_MASK)) { canFrame.can_id |= CAN_EFF_FLAG; }
+        // if (forceExtended || (message.getCanId() > CAN_SFF_MASK)) { canFrame.can_id |= CAN_EFF_FLAG; }
 
         bytesWritten = write(_socketFd, (const void*)&canFrame, sizeof(canFrame));
 
@@ -200,12 +195,10 @@ namespace sockcanpp {
      * @return queue<CanMessage> A queue containing the messages read from the bus buffer.
      */
     queue<CanMessage> CanDriver::readQueuedMessages() {
-        if (_socketFd < 0)
-	    throw InvalidSocketException("Invalid socket!", _socketFd);
+        if (_socketFd < 0) throw InvalidSocketException("Invalid socket!", _socketFd);
         unique_lock<mutex> locky(_lock);
         queue<CanMessage> messages;
-        for (int32_t i = _queueSize; 0 < i; --i)
-	    messages.emplace(readMessageLock(false));
+        for (int32_t i = _queueSize; 0 < i; --i) messages.emplace(readMessageLock(false));
         return messages;
     }
 
@@ -253,22 +246,20 @@ namespace sockcanpp {
 
         _socketFd = socket(PF_CAN, SOCK_RAW, _canProtocol);
 
-        if (_socketFd == -1) {
-            throw CanInitException(formatString("FAILED to initialise socketcan! Error: %d => %s", errno, strerror(errno)));
-        }
+        if (_socketFd == -1) { throw CanInitException(formatString("FAILED to initialise socketcan! Error: %d => %s", errno, strerror(errno))); }
 
         strcpy(ifaceRequest.ifr_name, _canInterface.c_str());
 
         if ((tmpReturn = ioctl(_socketFd, SIOCGIFINDEX, &ifaceRequest)) == -1) {
-            throw CanInitException(formatString("FAILED to perform IO control operation on socket %s! Error: %d => %s", _canInterface.c_str(), errno,
-                                    strerror(errno)));
+            throw CanInitException(
+                formatString("FAILED to perform IO control operation on socket %s! Error: %d => %s", _canInterface.c_str(), errno, strerror(errno)));
         }
 
         fdOptions = fcntl(_socketFd, F_GETFL);
         fdOptions |= O_NONBLOCK;
         tmpReturn = fcntl(_socketFd, F_SETFL, fdOptions);
 
-        address.can_family = AF_CAN;
+        address.can_family  = AF_CAN;
         address.can_ifindex = ifaceRequest.ifr_ifindex;
 
         setCanFilterMask(_canFilterMask);
