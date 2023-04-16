@@ -60,11 +60,7 @@ namespace sockcanpp {
 
             struct can_frame rawFrame;
 
-            if (canId.isExtendedFrameId()) {
-                rawFrame.can_id = canId;
-                rawFrame.can_id |= CAN_EFF_FLAG;
-            } else
-                rawFrame.can_id = canId & 0x7FF;
+            rawFrame.can_id = canId & 0x7FF;
 
             memcpy(rawFrame.data, frameData.data(), frameData.size());
             rawFrame.can_dlc = frameData.size();
