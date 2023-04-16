@@ -60,7 +60,7 @@ namespace sockcanpp {
 
             struct can_frame rawFrame;
 
-            if (canId.isExtended()) {
+            if (canId.isExtendedFrameId()) {
                 rawFrame.can_id = canId;
                 rawFrame.can_id |= CAN_EFF_FLAG;
             } else
