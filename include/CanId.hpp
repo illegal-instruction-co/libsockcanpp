@@ -57,6 +57,9 @@ namespace sockcanpp {
         }
 
         CanId(const uint32_t identifier): _identifier(identifier) {
+            /*
+            * Fix extended frames later
+            */
             if (isValidIdentifier(identifier)) {
                 if (((int32_t)log2(identifier) + 1) > 11)
                     _isExtendedFrameId = true;
