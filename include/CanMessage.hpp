@@ -4,7 +4,7 @@
  * @brief Contains the implementation of a CAN message representation in C++.
  * @version 0.1
  * @date 2020-07-01
- * 
+ *
  * @copyright Copyright (c) 2020 Simon Cahill
  *
  *  Copyright 2020 Simon Cahill
@@ -53,37 +53,40 @@ namespace sockcanpp {
      */
     class CanMessage {
         public: // +++ Constructor / Destructor +++
-            CanMessage(const struct can_frame frame):
-            _canIdentifier(frame.can_id), _frameData((const char*)frame.data, frame.can_dlc), _rawFrame(frame) { }
+        CanMessage(const struct can_frame frame): _canIdentifier(frame.can_id), _frameData((const char*)frame.data, frame.can_dlc), _rawFrame(frame) {}
 
-            CanMessage(const CanId canId, const string frameData): _canIdentifier(canId), _frameData(frameData) {
-                if (frameData.size() > 8) {
-                    throw system_error(error_code(0xbadd1c, generic_category()), "Payload too big!");
-                }
+        CanMessage(const CanId canId, const string frameData): _canIdentifier(canId), _frameData(frameData) {
+            if (frameData.size() > 8) { throw system_error(error_code(0xbadd1c, generic_category()), "Payload too big!"); }
 
-                struct can_frame rawFrame;
+            struct can_frame rawFrame;
+
+            if (canId.isExtended()) {
                 rawFrame.can_id = canId;
-                memcpy(rawFrame.data, frameData.data(), frameData.size());
-                rawFrame.can_dlc = frameData.size();
+                rawFrame.can_id |= CAN_EFF_FLAG;
+            } else
+                rawFrame.can_id = canId & 0x7FF;
 
-                _rawFrame = rawFrame;
-            }
+            memcpy(rawFrame.data, frameData.data(), frameData.size());
+            rawFrame.can_dlc = frameData.size();
 
-            virtual ~CanMessage() {}
+            _rawFrame = rawFrame;
+        }
+
+        virtual ~CanMessage() {}
 
         public: // +++ Getters +++
-            const CanId getCanId() const { return this->_canIdentifier; }
-            const string getFrameData() const { return this->_frameData; }
-            const can_frame getRawFrame() const { return this->_rawFrame; }
+        const CanId getCanId() const { return this->_canIdentifier; }
+        const string getFrameData() const { return this->_frameData; }
+        const can_frame getRawFrame() const { return this->_rawFrame; }
 
         private:
-            CanId _canIdentifier;
+        CanId _canIdentifier;
 
-            string _frameData;
+        string _frameData;
 
-            struct can_frame _rawFrame;
+        struct can_frame _rawFrame;
     };
 
-}
+} // namespace sockcanpp
 
 #endif // LIBSOCKCANPP_INCLUDE_CANMESSAGE_HPP
