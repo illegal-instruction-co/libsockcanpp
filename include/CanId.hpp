@@ -69,19 +69,6 @@ namespace sockcanpp {
             }
         }
 
-        CanId(const uint16_t identifier): _identifier(identifier & 0x7FF) { // 11 bit
-            if (isValidIdentifier(identifier)) {
-                if (((uint16_t)log2(identifier) + 1) > 11)
-                    _isStandardFrameId = true;
-                else
-                    _isExtendedFrameId = true;
-            } else if (isErrorFrame(identifier)) {
-                _isErrorFrame = true;
-            } else if (isRemoteTransmissionRequest(identifier)) {
-                _isRemoteTransmissionRequest = true;
-            }
-        }
-
         CanId(): _identifier(0), _isStandardFrameId(true) {}
 
         public: // +++ Operators +++
