@@ -64,6 +64,7 @@ namespace sockcanpp {
     using std::mutex;
     using std::queue;
     using std::string;
+    using std::string_view;
     using std::strncpy;
     using std::unique_lock;
     using std::chrono::milliseconds;
@@ -78,10 +79,10 @@ namespace sockcanpp {
     const int32_t CanDriver::CAN_SOCK_SEVEN      = 7;
 
 #pragma region Object Construction
-    CanDriver::CanDriver(string canInterface, int32_t canProtocol, const CanId defaultSenderId):
+    CanDriver::CanDriver(string_view canInterface, int32_t canProtocol, const CanId defaultSenderId):
         CanDriver(canInterface, canProtocol, 0 /* match all */, defaultSenderId) {}
 
-    CanDriver::CanDriver(const string canInterface, const int32_t canProtocol, const int32_t filterMask, const CanId defaultSenderId):
+    CanDriver::CanDriver(const string_view canInterface, const int32_t canProtocol, const int32_t filterMask, const CanId defaultSenderId):
         _defaultSenderId(defaultSenderId), _canProtocol(canProtocol), _canInterface(canInterface), _canFilterMask(filterMask), _socketFd(-1) {
         initialiseSocketCan();
     }
@@ -252,11 +253,11 @@ namespace sockcanpp {
 
         if (_socketFd == -1) { throw CanInitException(formatString("FAILED to initialise socketcan! Error: %d => %s", errno, strerror(errno))); }
 
-        strcpy(ifaceRequest.ifr_name, _canInterface.c_str());
+        strcpy(ifaceRequest.ifr_name, _canInterface.data());
 
         if ((tmpReturn = ioctl(_socketFd, SIOCGIFINDEX, &ifaceRequest)) == -1) {
             throw CanInitException(
-                formatString("FAILED to perform IO control operation on socket %s! Error: %d => %s", _canInterface.c_str(), errno, strerror(errno)));
+                formatString("FAILED to perform IO control operation on socket %s! Error: %d => %s", _canInterface.data(), errno, strerror(errno)));
         }
 
         fdOptions = fcntl(_socketFd, F_GETFL);
