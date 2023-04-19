@@ -31,6 +31,7 @@
 #include <mutex>
 #include <queue>
 #include <string>
+#include <string_view>
 #include <thread>
 
 //////////////////////////////
@@ -49,6 +50,7 @@ namespace sockcanpp {
     using std::mutex;
     using std::queue;
     using std::string;
+    using std::string_view;
     using std::chrono::milliseconds;
 
     /**
@@ -65,9 +67,9 @@ namespace sockcanpp {
         static const int32_t CAN_SOCK_RAW;        ///!< The raw CAN protocol
         static const int32_t CAN_SOCK_SEVEN;      ///!< A separate CAN protocol, used by certain embedded device OEMs.
 
-        public:                                                                                           // +++ Constructor / Destructor +++
-        CanDriver(const string canInterface, const int32_t canProtocol, const CanId defaultSenderId = 0); ///!< Constructor
-        CanDriver(const string canInterface, const int32_t canProtocol, const int32_t filterMask, const CanId defaultSenderId = 0);
+        public:                                                                                                // +++ Constructor / Destructor +++
+        CanDriver(const string_view canInterface, const int32_t canProtocol, const CanId defaultSenderId = 0); ///!< Constructor
+        CanDriver(const string_view canInterface, const int32_t canProtocol, const int32_t filterMask, const CanId defaultSenderId = 0);
         CanDriver() {}
         virtual ~CanDriver() { uninitialiseSocketCan(); } ///!< Destructor
 
@@ -111,7 +113,7 @@ namespace sockcanpp {
 
         mutex _lock; ///!< Mutex for thread-safety.
 
-        string _canInterface; ///!< The CAN interface used for communication (e.g. can0, can1, ...)
+        string_view _canInterface; ///!< The CAN interface used for communication (e.g. can0, can1, ...)
     };
 
     /**
