@@ -30,10 +30,12 @@
 //////////////////////////////
 #include <linux/can.h>
 
+#include <cstdint>
 #include <cstring>
 #include <exception>
 #include <string>
 #include <thread>
+#include <vector>
 
 //////////////////////////////
 //      LOCAL  INCLUDES     //
@@ -47,6 +49,7 @@ namespace sockcanpp {
     using std::memcpy;
     using std::string;
     using std::system_error;
+    using std::vector;
 
     /**
      * @brief Represents a CAN message that was received.
@@ -55,7 +58,7 @@ namespace sockcanpp {
         public: // +++ Constructor / Destructor +++
         CanMessage(const struct can_frame frame): _canIdentifier(frame.can_id), _frameData((const char*)frame.data, frame.can_dlc), _rawFrame(frame) {}
 
-        CanMessage(const CanId canId, const string frameData): _canIdentifier(canId), _frameData(frameData) {
+        CanMessage(const CanId canId, const vector<uint8_t> frameData): _canIdentifier(canId) {
             if (frameData.size() > 8) { throw system_error(error_code(0xbadd1c, generic_category()), "Payload too big!"); }
 
             struct can_frame rawFrame;
