@@ -25,18 +25,17 @@
 #ifndef LIBSOCKCANPP_INCLUDE_EXCEPTIONS_CANCLOSEEXCEPTION_HPP
 #define LIBSOCKCANPP_INCLUDE_EXCEPTIONS_CANCLOSEEXCEPTION_HPP
 
-#include <exception>
+#include "Exception.hpp"
 #include <string>
 
 namespace sockcanpp { namespace exceptions {
 
-    using std::exception;
     using std::string;
 
     /**
      * @brief An exception that may be thrown when an error occurs while closing a CAN socket.
      */
-    class CanCloseException: public exception {
+    class CanCloseException: public Exception {
         public: // +++ Constructor / Destructor +++
             CanCloseException(string message): _message(message) {}
             ~CanCloseException() {}
