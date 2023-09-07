@@ -6,6 +6,8 @@
  * @date 2023-09-07
  */
 
+#pragma once
+
 #include <exception>
 
 namespace sockcanpp { namespace exceptions {
