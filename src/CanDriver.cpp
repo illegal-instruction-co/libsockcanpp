@@ -149,7 +149,7 @@ namespace sockcanpp {
     int32_t CanDriver::sendMessage(const CanMessage message, bool forceExtended) {
         if (_socketFd < 0) { throw InvalidSocketException("Invalid socket!", _socketFd); }
 
-        unique_lock<mutex> locky(_lock);
+        unique_lock<mutex> locky(_lockSend);
 
         int32_t bytesWritten = 0;
 
@@ -159,9 +159,7 @@ namespace sockcanpp {
 
         auto canFrame = message.getRawFrame();
 
-        /*
-         * Fix extended frames later
-         */
+        if (forceExtended || ((uint32_t)message.getCanId() > CAN_SFF_MASK)) { canFrame.can_id |= CAN_EFF_FLAG; }
 
         // if (forceExtended || (message.getCanId() > CAN_SFF_MASK)) { canFrame.can_id |= CAN_EFF_FLAG; }
 
