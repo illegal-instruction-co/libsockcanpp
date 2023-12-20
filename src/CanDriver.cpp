@@ -26,6 +26,7 @@
 #include "CanDriver.hpp"
 #include "CanId.hpp"
 #include "CanMessage.hpp"
+
 #include "exceptions/CanCloseException.hpp"
 #include "exceptions/CanException.hpp"
 #include "exceptions/CanInitException.hpp"
