@@ -161,8 +161,6 @@ namespace sockcanpp {
 
         if (forceExtended || ((uint32_t)message.getCanId() > CAN_SFF_MASK)) { canFrame.can_id |= CAN_EFF_FLAG; }
 
-        if (forceExtended || (message.getCanId() > CAN_SFF_MASK)) { canFrame.can_id |= CAN_EFF_FLAG; }
-
         bytesWritten = write(_socketFd, (const void*)&canFrame, sizeof(canFrame));
 
         if (bytesWritten == -1) { throw CanException(formatString("FAILED to write data to socket! Error: %d => %s", errno, strerror(errno)), _socketFd); }
