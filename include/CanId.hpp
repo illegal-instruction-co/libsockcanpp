@@ -25,11 +25,14 @@
 
 #pragma once
 
-#include <bitset>
+#include <cstdint>
 #include <cmath>
+
+#include <bitset>
 #include <exception>
-#include <linux/can.h>
 #include <system_error>
+
+#include <linux/can.h>
 
 namespace sockcanpp {
 
