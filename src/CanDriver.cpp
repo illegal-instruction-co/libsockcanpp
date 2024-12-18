@@ -235,7 +235,7 @@ void CanDriver::initialiseSocketCan() {
   address.can_family = AF_CAN;
   address.can_ifindex = ifaceRequest.ifr_ifindex;
 
-  setCanFilterMask(_canFilterMask);
+  setCanFilterMask(_canFilterMask, _defaultSenderId);
 
   if ((tmpReturn =
            bind(_socketFd, (struct sockaddr *)&address, sizeof(address))) == -1)
