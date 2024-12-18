@@ -178,14 +178,18 @@ queue<CanMessage> CanDriver::readQueuedMessages() {
   return messages;
 }
 
-void CanDriver::setCanFilterMask(const int32_t mask) {
+void CanDriver::setCanFilterMask(const int32_t mask, const int32_t id) {
   if (_socketFd < 0)
     throw InvalidSocketException("Invalid socket!", _socketFd);
 
   unique_lock<mutex> locky(_lock);
   can_filter canFilter;
 
-  canFilter.can_id = _defaultSenderId;
+  if(id)
+    canFilter.can_id = id;
+  else
+    canFilter.can_id = _defaultSenderId;
+  
   canFilter.can_mask = mask;
 
   if (setsockopt(_socketFd, SOL_CAN_RAW, CAN_RAW_FILTER, &canFilter,

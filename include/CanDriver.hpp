@@ -31,7 +31,6 @@
 #include <queue>
 #include <string>
 #include <string_view>
-#include <thread>
 
 namespace sockcanpp {
 
@@ -49,10 +48,10 @@ public:
   static const int32_t CAN_SOCK_SEVEN;
 
 public:
-  CanDriver(const string_view canInterface, const int32_t canProtocol,
+  CanDriver(const string_view, const int32_t,
             const CanId defaultSenderId = 0);
-  CanDriver(const string_view canInterface, const int32_t canProtocol,
-            const int32_t filterMask, const CanId defaultSenderId = 0);
+  CanDriver(const string_view, const int32_t canProtocol,
+            const int32_t, const CanId defaultSenderId = 0);
   CanDriver() {}
   virtual ~CanDriver() { uninitialiseSocketCan(); }
 
@@ -74,7 +73,7 @@ public:
 
   virtual CanMessage readMessage();
 
-  virtual int32_t sendMessage(const CanMessage message,
+  virtual int32_t sendMessage(const CanMessage,
                               bool forceExtended = false);
   virtual int32_t sendMessageQueue(queue<CanMessage> messages,
                                    milliseconds delay = milliseconds(20),
@@ -82,7 +81,7 @@ public:
 
   virtual queue<CanMessage> readQueuedMessages();
 
-  virtual void setCanFilterMask(const int32_t mask);
+  virtual void setCanFilterMask(const int32_t, const int32_t);
 
 protected:
   virtual void initialiseSocketCan();
