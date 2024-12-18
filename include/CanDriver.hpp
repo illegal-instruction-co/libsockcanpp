@@ -31,6 +31,7 @@
 #include <queue>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace sockcanpp {
 
@@ -81,7 +82,7 @@ public:
 
   virtual queue<CanMessage> readQueuedMessages();
 
-  virtual void setCanFilterMask(const int32_t, const int32_t);
+  virtual void setCanFilters(const std::vector<std::pair<uint32_t, uint32_t>>&);
 
 protected:
   virtual void initialiseSocketCan();

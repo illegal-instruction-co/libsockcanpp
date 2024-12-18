@@ -63,6 +63,8 @@ using std::strncpy;
 using std::unique_lock;
 using std::chrono::milliseconds;
 using std::this_thread::sleep_for;
+using std::pair;
+using std::make_pair;
 
 const int32_t CanDriver::CAN_MAX_DATA_LENGTH = 8;
 const int32_t CanDriver::CAN_SOCK_RAW = CAN_RAW;
@@ -178,27 +180,24 @@ queue<CanMessage> CanDriver::readQueuedMessages() {
   return messages;
 }
 
-void CanDriver::setCanFilterMask(const int32_t mask, const int32_t id) {
+void CanDriver::setCanFilters(const vector<pair<uint32_t, uint32_t>>& filters) {
   if (_socketFd < 0)
     throw InvalidSocketException("Invalid socket!", _socketFd);
 
   unique_lock<mutex> locky(_lock);
-  can_filter canFilter;
+  can_filter canFilter[filters.size()];
 
-  if(id)
-    canFilter.can_id = id;
-  else
-    canFilter.can_id = _defaultSenderId;
-  
-  canFilter.can_mask = mask;
+  for (size_t i = 0; i < filters.size(); ++i) {
+    canFilter[i].can_id = filters[i].first;
+    canFilter[i].can_mask = filters[i].second;
+  }
 
+ 
   if (setsockopt(_socketFd, SOL_CAN_RAW, CAN_RAW_FILTER, &canFilter,
                  sizeof(canFilter)) == -1)
-    throw CanInitException(formatString(
-        "FAILED to set CAN filter mask %x on socket %d! Error: %d => %s", mask,
-        _socketFd, errno, strerror(errno)));
+    throw CanInitException("Failed to set CAN filters!");
 
-  _canFilterMask = mask;
+  _canFilterMask = filters[0].second;
 }
 #pragma endregion
 
@@ -235,7 +234,7 @@ void CanDriver::initialiseSocketCan() {
   address.can_family = AF_CAN;
   address.can_ifindex = ifaceRequest.ifr_ifindex;
 
-  setCanFilterMask(_canFilterMask, _defaultSenderId);
+  setCanFilters({make_pair(_canFilterMask, _defaultSenderId)});
 
   if ((tmpReturn =
            bind(_socketFd, (struct sockaddr *)&address, sizeof(address))) == -1)
